@@ -1,91 +1,106 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <title>Audioguide Venise</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audioguide Venise</title>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  <script src="https://cdn.jsdelivr.net/npm/@foobar404/wave@1.1.0/dist/wave.min.js"></script>
   <style>
-      .marquee-container {
-          width: 100%;
-          max-width: 600px;
-          margin: 0 auto;
-          overflow: hidden;
-          background-color: orange;
-          border-radius: 5px;
-          padding: 10px;
-      }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      background: #f4f4f9;
+      color: #333;
+    }
 
-      .marquee {
-          display: inline-block;
-          white-space: nowrap;
-          animation: marquee 10s linear infinite;
-          color: white;
-          font-size: 1.2em;
-          text-align: center;
-      }
+    .marquee-container {
+      width: 100%;
+      max-width: 600px;
+      margin: 20px auto;
+      overflow: hidden;
+      background-color: orange;
+      border-radius: 5px;
+      padding: 10px;
+    }
 
-      @keyframes marquee {
-          0% { transform: translateX(100%); }
-          100% { transform: translateX(-100%); }
-      }
+    .marquee {
+      display: inline-block;
+      white-space: nowrap;
+      animation: marquee 10s linear infinite;
+      color: white;
+      font-size: 1.2em;
+      text-align: center;
+      transform: translateX(50%);
+    }
 
-      .audio-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 20px;
-      }
+    @keyframes marquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
 
-      .audio-buttons {
-          display: flex;
-          justify-content: center;
-          gap: 15px;
-      }
+    #waveform {
+      width: 80%;
+      margin: 20px auto;
+    }
 
-      .audio-buttons button {
-          width: 150px;
-      }
+    .controls {
+      margin-top: 10px;
+    }
 
-      canvas {
-          width: 100%;
-          max-width: 600px;
-          height: 200px;
-          border-radius: 10px;
-          background: #000;
-      }
+    .controls button {
+      padding: 10px 15px;
+      margin: 5px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .controls button:hover {
+      background-color: #45a049;
+    }
+
+    #startBtn {
+      background-color: #007BFF;
+    }
+
+    #startBtn:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
-<body class="w3-container w3-light-grey">
-    <div class="w3-card w3-padding w3-margin w3-white">
-        <h2 class="w3-center">Audioguide Venise</h2>
+<body>
+  <h1>Audioguide Venise</h1>
 
-        <!-- Texte défilant pour le titre -->
-        <div class="marquee-container">
-            <div id="audioTitle" class="marquee">Sélectionnez une piste</div>
-        </div>
+  <!-- Texte défilant -->
+  <div class="marquee-container">
+    <div id="audioTitle" class="marquee">Sélectionnez une piste</div>
+  </div>
 
-        <!-- Lecteur audio et spectre Wave -->
-        <div class="audio-container">
-            <audio id="audioPlayer" class="w3-block" controls>
-                <source id="audioSource" src="" type="audio/mpeg">
-                Votre navigateur ne supporte pas l'élément audio.
-            </audio>
-            <canvas id="audioVisualizer"></canvas>
-        </div>
+  <!-- Waveform -->
+  <div id="waveform"></div>
 
-        <!-- Boutons pour changer la source -->
-        <div class="audio-buttons">
-            <button class="w3-button w3-green" onclick="changeAudio(1)">Étape Suivante</button>
-            <button class="w3-button w3-blue" onclick="changeAudio(-1)">Étape Précédente</button>
-        </div>
-    </div>
+  <!-- Boutons de contrôle -->
+  <div class="controls">
+    <button id="startBtn">Démarrer</button>
+    <button id="playPauseBtn" disabled>Lecture</button>
+    <button id="nextBtn" disabled>Suivant</button>
+    <button id="prevBtn" disabled>Précédent</button>
+    <button id="stopBtn" disabled>Arrêter</button>
+  </div>
 
-    <script>
-      const srcAudio = ["Intro.mp3", "1.mp3", "2.mp3", "3.mp3", "4.mp3", "5.mp3", "Outro.mp3"];
-      const affAudio = [
+  <!-- Ajouter WaveSurfer.js -->
+  <script src="https://unpkg.com/wavesurfer.js"></script>
+
+  <script>
+    const srcAudio = ["Intro.mp3", "1.mp3", "2.mp3", "3.mp3", "4.mp3", "5.mp3", "Outro.mp3"];
+
+    const affAudio =  [
           "Introduction",
           "1 - Le Palais des Doges",
           "2 - L'Arsenal",
@@ -94,42 +109,70 @@
           "5 - La basilique St-Marc",
           "Outro - merci, à bientôt !"
       ];
+    let index = 0;
 
-      let index = 0;
+    // Initialisation de WaveSurfer
+    const waveSurfer = WaveSurfer.create({
+      container: '#waveform',
+      waveColor: '#ddd',
+      progressColor: '#4CAF50',
+      height: 100,
+      responsive: true
+    });
 
-      // Initialisation du lecteur audio et du spectre
-      const audioPlayer = document.getElementById('audioPlayer');
-      const audioSource = document.getElementById('audioSource');
-      const audioTitle = document.getElementById('audioTitle');
-      const canvas = document.getElementById('audioVisualizer');
-      const wave = new Wave();
+    const audioTitle = document.getElementById('audioTitle');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const startBtn = document.getElementById('startBtn');
 
-      // Appliquer le spectre audio
-      wave.fromElement(audioPlayer, canvas, {
-          type: "bars",
-          colors: ["#00c6ff", "#0072ff"],
-          barWidth: 2,
-          barHeight: 1,
-          barSpacing: 2,
-      });
+    function updateButtons(state) {
+      playPauseBtn.disabled = !state;
+      stopBtn.disabled = !state;
+      nextBtn.disabled = !state;
+      prevBtn.disabled = !state;
+    }
 
-      function changeAudio(step) {
-          index += step;
-          if (index < 0) index = srcAudio.length - 1;
-          if (index >= srcAudio.length) index = 0;
+    function loadAudio(idx) {
+      waveSurfer.load(srcAudio[idx]);
+      audioTitle.textContent = affAudio[idx];
+    }
 
-          if (srcAudio[index] && affAudio[index]) {
-              audioSource.src = srcAudio[index];
-              audioTitle.textContent = affAudio[index];
-              audioPlayer.load();
-              audioPlayer.play();
-          }
-      }
+    startBtn.addEventListener('click', () => {
+      loadAudio(0);
+      updateButtons(true);
+      waveSurfer.play();
+      startBtn.disabled = true;
+    });
 
-      // Passer automatiquement à la piste suivante lorsque l'audio se termine
-      audioPlayer.addEventListener('ended', () => {
-          changeAudio(1);
-      });
-    </script>
+    playPauseBtn.addEventListener('click', () => {
+      waveSurfer.playPause();
+      playPauseBtn.textContent = waveSurfer.isPlaying() ? 'Pause' : 'Lecture';
+    });
+
+    stopBtn.addEventListener('click', () => {
+      waveSurfer.stop();
+      playPauseBtn.textContent = 'Lecture';
+    });
+
+    nextBtn.addEventListener('click', () => {
+      index = (index + 1) % srcAudio.length;
+      loadAudio(index);
+      waveSurfer.play();
+    });
+
+    prevBtn.addEventListener('click', () => {
+      index = (index - 1 + srcAudio.length) % srcAudio.length;
+      loadAudio(index);
+      waveSurfer.play();
+    });
+
+    waveSurfer.on('finish', () => {
+      index = (index + 1) % srcAudio.length;
+      loadAudio(index);
+      waveSurfer.play();
+    });
+  </script>
 </body>
 </html>
