@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/wave/0.1.0/wave.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@foobar404/wave@1.1.0/dist/wave.min.js"></script>
   <style>
       .marquee-container {
           width: 100%;
@@ -49,19 +49,12 @@
           width: 150px;
       }
 
-      .wave {
-          margin-top: 20px;
+      canvas {
           width: 100%;
           max-width: 600px;
-          height: 50px;
-          background: linear-gradient(to right, #00c6ff, #0072ff);
+          height: 200px;
           border-radius: 10px;
-          animation: wave-animation 2s infinite alternate;
-      }
-
-      @keyframes wave-animation {
-          0% { transform: scaleX(1); }
-          100% { transform: scaleX(1.1); }
+          background: #000;
       }
   </style>
 </head>
@@ -74,13 +67,13 @@
             <div id="audioTitle" class="marquee">Sélectionnez une piste</div>
         </div>
 
-        <!-- Lecteur audio et Wave -->
+        <!-- Lecteur audio et spectre Wave -->
         <div class="audio-container">
             <audio id="audioPlayer" class="w3-block" controls>
                 <source id="audioSource" src="" type="audio/mpeg">
                 Votre navigateur ne supporte pas l'élément audio.
             </audio>
-            <div class="wave"></div>
+            <canvas id="audioVisualizer"></canvas>
         </div>
 
         <!-- Boutons pour changer la source -->
@@ -104,14 +97,26 @@
 
       let index = 0;
 
+      // Initialisation du lecteur audio et du spectre
+      const audioPlayer = document.getElementById('audioPlayer');
+      const audioSource = document.getElementById('audioSource');
+      const audioTitle = document.getElementById('audioTitle');
+      const canvas = document.getElementById('audioVisualizer');
+      const wave = new Wave();
+
+      // Appliquer le spectre audio
+      wave.fromElement(audioPlayer, canvas, {
+          type: "bars",
+          colors: ["#00c6ff", "#0072ff"],
+          barWidth: 2,
+          barHeight: 1,
+          barSpacing: 2,
+      });
+
       function changeAudio(step) {
           index += step;
           if (index < 0) index = srcAudio.length - 1;
           if (index >= srcAudio.length) index = 0;
-
-          const audioPlayer = document.getElementById('audioPlayer');
-          const audioSource = document.getElementById('audioSource');
-          const audioTitle = document.getElementById('audioTitle');
 
           if (srcAudio[index] && affAudio[index]) {
               audioSource.src = srcAudio[index];
@@ -121,7 +126,8 @@
           }
       }
 
-      document.getElementById('audioPlayer').addEventListener('ended', () => {
+      // Passer automatiquement à la piste suivante lorsque l'audio se termine
+      audioPlayer.addEventListener('ended', () => {
           changeAudio(1);
       });
     </script>
