@@ -7,16 +7,22 @@
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/wave/0.1.0/wave.min.css">
   <style>
-      .marquee {
+      .marquee-container {
+          width: 100%;
+          max-width: 600px;
+          margin: 0 auto;
           overflow: hidden;
-          white-space: nowrap;
-          box-sizing: border-box;
-          animation: marquee 10s linear infinite;
           background-color: orange;
-          color: white;
-          padding: 10px;
-          font-size: 1.2em;
           border-radius: 5px;
+          padding: 10px;
+      }
+
+      .marquee {
+          display: inline-block;
+          white-space: nowrap;
+          animation: marquee 10s linear infinite;
+          color: white;
+          font-size: 1.2em;
           text-align: center;
       }
 
@@ -50,6 +56,12 @@
           height: 50px;
           background: linear-gradient(to right, #00c6ff, #0072ff);
           border-radius: 10px;
+          animation: wave-animation 2s infinite alternate;
+      }
+
+      @keyframes wave-animation {
+          0% { transform: scaleX(1); }
+          100% { transform: scaleX(1.1); }
       }
   </style>
 </head>
@@ -58,7 +70,9 @@
         <h2 class="w3-center">Audioguide Venise</h2>
 
         <!-- Texte défilant pour le titre -->
-        <div id="audioTitle" class="w3-panel marquee">Sélectionnez une piste</div>
+        <div class="marquee-container">
+            <div id="audioTitle" class="marquee">Sélectionnez une piste</div>
+        </div>
 
         <!-- Lecteur audio et Wave -->
         <div class="audio-container">
@@ -106,6 +120,10 @@
               audioPlayer.play();
           }
       }
+
+      document.getElementById('audioPlayer').addEventListener('ended', () => {
+          changeAudio(1);
+      });
     </script>
 </body>
 </html>
