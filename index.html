@@ -84,6 +84,30 @@
 
   <!-- Waveform -->
   <div id="waveform"></div>
+  <div id="imageContainer">
+  <img id="displayedImage" src="" alt="Image à afficher" style="width:100%; max-width:600px; border-radius:10px;">
+</div>
+
+<script>
+ const imageSources = [
+  "https://cdn.pixabay.com/photo/2021/10/05/16/14/venice-6683160_1280.jpg", // Image 0
+  "https://tse2.mm.bing.net/th?id=OIP.7M8O3m70DFRG9m3QIdZo9AHaE8&pid=Api",  // Image 1
+  "https://tse3.mm.bing.net/th?id=OIP.MaHjOj2xLY6W4h99087IVQHaE8&pid=Api",  // Image 2
+  "https://tse4.mm.bing.net/th?id=OIP.fb6TDEW-lqMFQcP3h55HAQHaE7&pid=Api",  // Image 3
+  "https://tse3.mm.bing.net/th?id=OIP.hh8GnwtdPie2EwDlsq77gQHaE8&pid=Api",  // Image 4
+  "https://tse1.mm.bing.net/th?id=OIP.E3BFDGb78eX-8t-myZ_46gHaD8&pid=Api",  // Image 5
+  "https://cdn.pixabay.com/photo/2021/10/05/16/14/venice-6683160_1280.jpg"  // Image 6
+];
+
+  function changeImage(index) {
+    const displayedImage = document.getElementById('displayedImage');
+    if (index >= 0 && index < imageSources.length) {
+      displayedImage.src = imageSources[index];
+    } else {
+      console.error("Index hors limites.");
+    }
+  }
+</script>
 
   <!-- Boutons de contrôle -->
   <div class="controls">
@@ -137,6 +161,7 @@
     function loadAudio(idx) {
       waveSurfer.load(srcAudio[idx]);
       audioTitle.textContent = affAudio[idx];
+      changeImage(idx);
     }
 
     startBtn.addEventListener('click', () => {
