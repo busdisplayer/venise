@@ -1,66 +1,111 @@
 <!DOCTYPE html>
-<html lang=fr>
+<html lang="fr">
 <head>
   <title>Audioguide Venise</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <style>
-        .marquee {
-            overflow: hidden;
-            white-space: nowrap;
-            box-sizing: border-box;
-            animation: marquee 10s linear infinite;
-        }
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/wave/0.1.0/wave.min.css">
+  <style>
+      .marquee {
+          overflow: hidden;
+          white-space: nowrap;
+          box-sizing: border-box;
+          animation: marquee 10s linear infinite;
+          background-color: orange;
+          color: white;
+          padding: 10px;
+          font-size: 1.2em;
+          border-radius: 5px;
+          text-align: center;
+      }
 
-        @keyframes marquee {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-    </style>
+      @keyframes marquee {
+          0% { transform: translateX(100%); }
+          100% { transform: translateX(-100%); }
+      }
+
+      .audio-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 20px;
+      }
+
+      .audio-buttons {
+          display: flex;
+          justify-content: center;
+          gap: 15px;
+      }
+
+      .audio-buttons button {
+          width: 150px;
+      }
+
+      .wave {
+          margin-top: 20px;
+          width: 100%;
+          max-width: 600px;
+          height: 50px;
+          background: linear-gradient(to right, #00c6ff, #0072ff);
+          border-radius: 10px;
+      }
+  </style>
 </head>
-<body>
-  <script>
-  const srcAudio = ["Intro.mp3", "1.mp3", "2.mp3", "3.mp3", "4.mp3", "5.mp3", "Outro.mp3"];
-  const affAudio = ["Introduction", "1 - Le Palais des Doges", "2 - L'Arsenal", "3 - Le quartier du Rialto et son célèbre pont", "4 - Le Grand Canal et ses palais-entrepôts", "5 - La basilique St-Marc","Outro - merci, à bientôt !"];
-    </script>
-  <body class="w3-container w3-light-grey">
+<body class="w3-container w3-light-grey">
     <div class="w3-card w3-padding w3-margin w3-white">
-        <h2 class="w3-center">Lecteur Audio</h2>
+        <h2 class="w3-center">Audioguide Venise</h2>
 
         <!-- Texte défilant pour le titre -->
-        <div id="audioTitle" class="w3-panel w3-blue w3-round-large marquee">Sélectionnez une piste</div>
+        <div id="audioTitle" class="w3-panel marquee">Sélectionnez une piste</div>
 
-        <!-- Lecteur audio -->
-        <audio id="audioPlayer" class="w3-block" controls>
-            <source id="audioSource" src="" type="audio/mpeg">
-            Votre navigateur ne supporte pas l'élément audio.
-        </audio>
+        <!-- Lecteur audio et Wave -->
+        <div class="audio-container">
+            <audio id="audioPlayer" class="w3-block" controls>
+                <source id="audioSource" src="" type="audio/mpeg">
+                Votre navigateur ne supporte pas l'élément audio.
+            </audio>
+            <div class="wave"></div>
+        </div>
 
         <!-- Boutons pour changer la source -->
-        <div class="w3-center w3-margin-top">
-            <button class="w3-button w3-green w3-margin" onclick="changeAudio(1)">Étape Suivante</button>
-            <button class="w3-button w3-blue w3-margin" onclick="changeAudio(-1)">Étape précédente</button>
+        <div class="audio-buttons">
+            <button class="w3-button w3-green" onclick="changeAudio(1)">Étape Suivante</button>
+            <button class="w3-button w3-blue" onclick="changeAudio(-1)">Étape Précédente</button>
         </div>
     </div>
 
     <script>
-      let index = 0;
-        // Fonction pour changer la source audio
-        function changeAudio(indexB) {
-          index += indexB;
-            const audioPlayer = document.getElementById('audioPlayer');
-            const audioSource = document.getElementById('audioSource');
-            const audioTitle = document.getElementById('audioTitle');
+      const srcAudio = ["Intro.mp3", "1.mp3", "2.mp3", "3.mp3", "4.mp3", "5.mp3", "Outro.mp3"];
+      const affAudio = [
+          "Introduction",
+          "1 - Le Palais des Doges",
+          "2 - L'Arsenal",
+          "3 - Le quartier du Rialto et son célèbre pont",
+          "4 - Le Grand Canal et ses palais-entrepôts",
+          "5 - La basilique St-Marc",
+          "Outro - merci, à bientôt !"
+      ];
 
-            if (srcAudio[index] && altAudio[index]) {
-                audioSource.src = srcAudio[index];
-                audioTitle.textContent = altAudio[index];
-                audioPlayer.load();
-                audioPlayer.play();
-            }
-        }
+      let index = 0;
+
+      function changeAudio(step) {
+          index += step;
+          if (index < 0) index = srcAudio.length - 1;
+          if (index >= srcAudio.length) index = 0;
+
+          const audioPlayer = document.getElementById('audioPlayer');
+          const audioSource = document.getElementById('audioSource');
+          const audioTitle = document.getElementById('audioTitle');
+
+          if (srcAudio[index] && affAudio[index]) {
+              audioSource.src = srcAudio[index];
+              audioTitle.textContent = affAudio[index];
+              audioPlayer.load();
+              audioPlayer.play();
+          }
+      }
     </script>
-  
 </body>
 </html>
